@@ -26,15 +26,18 @@ const uploads = require('./api/uploads');
 const StorageService = require('./services/storage/storageService');
 const UploadsValidator = require('./validator/uploads');
 
+const CacheService = require('./services/redis/CacheService');
+
 const path = require('path');
 const Jwt = require('@hapi/jwt');
 const Inert = require('@hapi/inert');
 
 const init = async () => {
-  const collaborationService = new CollaborationService();
+  const cacheService = new CacheService();
+  const collaborationService = new CollaborationService(cacheService);
   const usersServices = new UsersService();
   const authenticationsServices = new AuthenticationService();
-  const notesServices = new NoteService(collaborationService);
+  const notesServices = new NoteService(collaborationService, cacheService);
   const storageService = new StorageService(path.resolve(__dirname, 'api/uploads/file/images'));
 
   const server = Hapi.server({
